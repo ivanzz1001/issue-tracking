@@ -192,9 +192,11 @@ echo layer2+3 > /sys/class/net/bond1/bonding/xmit_hash_policy
 
 按上面的方法修改之后，发现当前网卡可以打到17.5Gb:
 
-   
+![hash-policy](https://raw.githubusercontent.com/ivanzz1001/issue-tracking/master/performance/image/bond-traffic-1.jpg)
 
-3) **限制 XPS，让每个 CPU 只用自己的 TX 队列（减少锁竞争）**
+我们看到采用此方法虽然bond整体流量已经到了`17.5GB`了，但是出现了严重的流量倾斜，其中`eth21`网卡流量几乎要打满，而`eth20`网卡流量过少。
+
+2) **限制 XPS，让每个 CPU 只用自己的 TX 队列（减少锁竞争）**
 
 ```bash
 # ls /sys/class/net/bond1/queues/       //可以看到有16个发送队列,实际上两个物理网卡是有64个发送队列(说明网卡bond应该也有问题)
@@ -235,6 +237,10 @@ echo "done"
 ```
 做上述操作之后重新压测，可以看到200Gb的网卡也可以打到17.5GB:
 
+![xps-bind-cpu](https://raw.githubusercontent.com/ivanzz1001/issue-tracking/master/performance/image/bond-traffic-2.jpg)
+
+我们看到采用此方法虽然bond整体流量已经到了`17.5GB`了，并且两个网卡的流量基本就一致了。目前两个网卡没有打满，猜测的原因可能是发送队列过少.
+
 
 3) **拆掉 bond，用 ECMP 双 IP**
 
@@ -243,9 +249,6 @@ eth20: 172.31.16.99  (VIP1)
 eth21: 172.31.16.120 (VIP2)
 ```
 上游交换机 ECMP 把流量分到两个 IP，两个 NIC 独立，各自有自己的 TX 队列锁，锁竞争直接减半。
-
-
-   
 
 
 
