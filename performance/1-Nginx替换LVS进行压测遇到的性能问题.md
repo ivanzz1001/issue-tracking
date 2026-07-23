@@ -190,7 +190,7 @@ echo layer2+3 > /sys/class/net/bond1/bonding/xmit_hash_policy
 ```
 `layer3+4` 把 src_ip + src_port + dst_ip + dst_port 都哈希，变化太少时容易聚到少数 slave。layer2+3 加入 MAC 地址，分布更均匀。
 
-按上面的方法修改之后，发现当前网卡可以打到17.5Gb:
+按上面的方法修改之后，发现当前网卡可以打到17.5GB:
 
 ![hash-policy](https://raw.githubusercontent.com/ivanzz1001/issue-tracking/master/performance/image/bond-traffic-1.jpg)
 
