@@ -18,8 +18,8 @@ BOND="bond1"
 
 # 先清空所有 RPS
 for q in /sys/class/net/${BOND}/queues/rx-*/rps_cpus; do
-    # echo 0 > "$q" 2>/dev/null
-    echo "$q"
+    echo "0000,00000000,00000000,00000000" > "$q" 2>/dev/null
+    # echo "$q"
 done
 
 
