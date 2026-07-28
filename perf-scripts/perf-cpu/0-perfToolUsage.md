@@ -26,3 +26,9 @@ perf report -i /tmp/perf.data --stdio --no-children | head -120
 # 例如展开 _raw_spin_lock 的调用栈，不截断
 perf report -i /tmp/perf.data --stdio --no-children 2>/dev/null | grep -A 50 "_raw_spin_lock"
 ```
+
+#### 用 cycles 事件抓热点（不需要 debug symbol）
+```bash
+perf record -e cycles:pp -g -a sleep 10
+perf report --stdio --sort symbol --percent-limit 0.5 | head -50
+```
